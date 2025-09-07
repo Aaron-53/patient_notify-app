@@ -75,6 +75,8 @@ class AuthService {
 
   // Verify JWT token with detailed result
   Future<TokenVerificationResult> verifyToken() async {
+    print("verifyToken called");
+    print(Environment.baseUrl);
     try {
       final token = await _storage.read(key: Environment.tokenKey);
       if (token == null || token.isEmpty) {

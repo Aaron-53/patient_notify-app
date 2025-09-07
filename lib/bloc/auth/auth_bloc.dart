@@ -66,7 +66,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     Emitter<AuthState> emit,
   ) async {
     emit(AuthLoading());
-
+    print("Verifying token...");
     try {
       final verificationResult = await _authService.verifyToken();
 

@@ -1,6 +1,9 @@
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+
 class Environment {
-  // Backend API base URL - update this to match your backend server
-  static const String baseUrl = 'http://192.168.0.102:8000';
+  // Backend API base URL - loaded from .env file
+  static String get baseUrl =>
+      dotenv.env['BASE_URL'] ?? 'http://localhost:8000';
 
   // API endpoints
   static const String loginEndpoint = '/auth/login';
@@ -11,4 +14,9 @@ class Environment {
   static const String tokenKey = 'jwt_token';
   static const String userIdKey = 'user_id';
   static const String userEmailKey = 'user_email';
+
+  // Initialize environment variables
+  static Future<void> initialize() async {
+    await dotenv.load(fileName: ".env");
+  }
 }
