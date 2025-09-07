@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
-import 'screens/login_screen.dart';
-import 'screens/welcome_screen.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'bloc/auth/auth_bloc.dart';
+import 'services/auth_service.dart';
+import 'router/app_router.dart';
 
 void main() {
   runApp(const MyApp());
@@ -11,15 +13,21 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      title: 'Patient Notifications',
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
-        useMaterial3: true,
+    final authService = AuthService();
+    final authBloc = AuthBloc(authService: authService);
+    final router = AppRouter.createRouter();
+
+    return BlocProvider(
+      create: (context) => authBloc,
+      child: MaterialApp.router(
+        debugShowCheckedModeBanner: false,
+        title: 'Patient Notifications',
+        theme: ThemeData(
+          colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
+          useMaterial3: true,
+        ),
+        routerConfig: router,
       ),
-      // Always start on the LoginScreen for now
-      home: const LoginScreen(),
     );
   }
 }
