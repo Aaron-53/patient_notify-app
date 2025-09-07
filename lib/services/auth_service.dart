@@ -3,6 +3,9 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import '../config/env.dart';
 import '../models/auth_models.dart';
 
+// Token verification result
+enum TokenVerificationResult { valid, invalid, networkError, noToken }
+
 class AuthService {
   final Dio _dio;
   final FlutterSecureStorage _storage;
@@ -21,7 +24,6 @@ class AuthService {
   // Login user
   Future<UserResponse> login(LoginRequest request) async {
     try {
-      print("Logging in...");
       final response = await _dio.post(
         Environment.loginEndpoint,
         data: request.toJson(),
@@ -35,14 +37,12 @@ class AuthService {
         throw Exception('Login failed');
       }
     } on DioException catch (e) {
-      print(e);
       if (e.response?.statusCode == 401) {
         throw Exception('Invalid email or password');
       } else {
         throw Exception('Login failed: ${e.message}');
       }
     } catch (e) {
-      print(e);
       throw Exception('Login failed: $e');
     }
   }
@@ -73,27 +73,44 @@ class AuthService {
     }
   }
 
-  // Verify JWT token
-  Future<bool> verifyToken() async {
+  // Verify JWT token with detailed result
+  Future<TokenVerificationResult> verifyToken() async {
     try {
       final token = await _storage.read(key: Environment.tokenKey);
-      if (token == null || token.isEmpty) return false;
+      if (token == null || token.isEmpty) {
+        return TokenVerificationResult.noToken;
+      }
 
       final response = await _dio.get(
         Environment.verifyTokenEndpoint,
         options: Options(headers: {'Authorization': 'Bearer $token'}),
       );
 
-      return response.statusCode == 200 && response.data['valid'] == true;
+      if (response.statusCode == 200 && response.data['valid'] == true) {
+        return TokenVerificationResult.valid;
+      } else {
+        return TokenVerificationResult.invalid;
+      }
     } on DioException catch (e) {
       if (e.response?.statusCode == 401) {
         // Token is invalid or expired, clear it
         await logout();
+        return TokenVerificationResult.invalid;
+      } else {
+        // Network error or other server error
+        // print('Token verification network error: ${e.message}');
+        return TokenVerificationResult.networkError;
       }
-      return false;
     } catch (e) {
-      return false;
+      // print('Token verification error: $e');
+      return TokenVerificationResult.networkError;
     }
+  }
+
+  // Legacy method for backward compatibility
+  Future<bool> verifyTokenSimple() async {
+    final result = await verifyToken();
+    return result == TokenVerificationResult.valid;
   }
 
   // Get stored user data

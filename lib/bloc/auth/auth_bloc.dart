@@ -17,7 +17,6 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     on<AuthTokenVerificationRequested>(_onAuthTokenVerificationRequested);
   }
 
-
   Future<void> _onAuthLoginRequested(
     AuthLoginRequested event,
     Emitter<AuthState> emit,
@@ -69,16 +68,29 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     emit(AuthLoading());
 
     try {
-      final isTokenValid = await _authService.verifyToken();
-      if (isTokenValid) {
-        final user = await _authService.getCurrentUser();
-        if (user != null) {
-          emit(AuthAuthenticated(user: user));
-        } else {
+      final verificationResult = await _authService.verifyToken();
+
+      switch (verificationResult) {
+        case TokenVerificationResult.valid:
+          final user = await _authService.getCurrentUser();
+          if (user != null) {
+            emit(AuthAuthenticated(user: user));
+          } else {
+            emit(AuthUnauthenticated());
+          }
+          break;
+        case TokenVerificationResult.invalid:
+        case TokenVerificationResult.noToken:
           emit(AuthUnauthenticated());
-        }
-      } else {
-        emit(AuthUnauthenticated());
+          break;
+        case TokenVerificationResult.networkError:
+          emit(
+            AuthNetworkError(
+              message:
+                  'Network error occurred. Please check your connection and try again.',
+            ),
+          );
+          break;
       }
     } catch (e) {
       emit(AuthUnauthenticated());
