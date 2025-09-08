@@ -9,6 +9,9 @@ class Environment {
   static const String loginEndpoint = '/auth/login';
   static const String signupEndpoint = '/auth/signup';
   static const String verifyTokenEndpoint = '/auth/verify';
+  static const String treatmentPlansCreateEndpoint = '/treatment-plans/create';
+  static const String treatmentPlansSummaryEndpoint =
+      '/treatment-plans/summary';
 
   // Storage keys
   static const String tokenKey = 'jwt_token';

@@ -41,8 +41,8 @@ class _SplashScreenState extends State<SplashScreen> {
     return BlocConsumer<AuthBloc, AuthState>(
       listener: (context, state) {
         if (state is AuthAuthenticated) {
-          // Navigate to welcome screen
-          context.go('/welcome');
+          // Navigate to dashboard screen
+          context.go('/dashboard');
         } else if (state is AuthUnauthenticated || state is AuthError) {
           // Navigate to login screen
           context.go('/login');
