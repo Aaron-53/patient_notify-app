@@ -5,7 +5,7 @@ import 'package:go_router/go_router.dart';
 import '../bloc/auth/auth_bloc.dart';
 import '../bloc/auth/auth_state.dart';
 import '../bloc/auth/auth_event.dart';
-import '../config/env.dart';
+import '../config/constants.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});

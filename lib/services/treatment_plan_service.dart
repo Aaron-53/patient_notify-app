@@ -1,6 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import '../config/env.dart';
+import '../config/constants.dart';
 import '../models/treatment_plan_models.dart';
 
 class TreatmentPlanService {

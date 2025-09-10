@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'router/app_router.dart';
-import 'config/env.dart';
+import 'config/constants.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
